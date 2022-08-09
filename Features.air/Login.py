@@ -30,23 +30,50 @@ def runLogin(deviceId):
 
 # Start game với accName được truyền vào (trên 6 kí tự). 
 # Nếu accName chưa có trong list thì sẽ check Register account đó
-def StartGame(caseId, accName):
-    poco("TextField_1").click()
-    for i in range(10):
-        keyevent("KEYCODE_DEL")
-    text("hovanvydut")
-    sleep(3)
-    poco("Button_1").click([0.5, 0.5])
-    sleep(3)
-    if poco("battleBtnBackgroundImg").exists():
-        WriteLogRunning(caseId, "Login Success", "", False, True)
+def StartGame(caseId, accName, expectedResult, description):
+    expectedResult = True if expectedResult.lower() == "true" else False
+
+    LoginAction(accName)
+
+    testResult = True
+    if poco(BTN_PLAY_BATTLE).exists():
+        testResult = True
     else:
-        WriteLogRunning(caseId, "Login Fail - Account name is too short", "", False, False)
-
-    # sleep(10)
-    # Logout(caseId)
+        testResult = False
 
 
+    writeResultWithDescription(caseId, description, testResult, expectedResult)
 
-def Logout (caseId):
+def LoginAndLogout(caseId, accName, expectedResult, description):
+    expectedResult = True if expectedResult.lower() == "true" else False
+
+    LoginAction(accName)
+    LogoutAction()
+
+    testResult = None
+    if poco(BTN_LOGIN).exists() and poco(TXT_FIELD_LOGIN).exists():
+        testResult = True
+    else:
+        testResult = False
+
+    writeResultWithDescription(caseId, description, testResult, expectedResult)
+
+def LoginAction (accName):
+    poco(TXT_FIELD_LOGIN).click()
+
+    for i in range(20):
+        keyevent("KEYCODE_DEL")
+    text(accName)
+    sleep(1)
+
+    poco(BTN_LOGIN).click([0.5, 0.5])
+    sleep(3)
+
+def LogoutAction (caseId):
     poco("LogoutButton").click([0.5, 0.5])
+
+def writeResultWithDescription(caseId, description, testResult, expectedResult):
+    if testResult == expectedResult:
+        WriteLogRunning(caseId, description, "", False, True)
+    else:
+        WriteLogRunning(caseId, description, "", False, False)

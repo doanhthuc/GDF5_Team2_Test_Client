@@ -7,8 +7,10 @@ from poco.drivers.cocosjs import CocosJsPoco
 auto_setup(__file__)
 poco = CocosJsPoco()
 
-# =========================== Login =========================== 
-BTN_LOGIN = "login"
+# =========================== Login ===========================
+TXT_FIELD_LOGIN = "TextField_1"
+BTN_LOGIN = "Button_1"
+BTN_PLAY_BATTLE = "battleBtnBackgroundImg"
 
 # =========================== General =========================== 
 
