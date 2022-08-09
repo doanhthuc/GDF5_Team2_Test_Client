@@ -69,7 +69,7 @@ def LoginAction (accName):
     poco(BTN_LOGIN).click([0.5, 0.5])
     sleep(3)
 
-def LogoutAction (caseId):
+def LogoutAction ():
     poco("LogoutButton").click([0.5, 0.5])
 
 def writeResultWithDescription(caseId, description, testResult, expectedResult):

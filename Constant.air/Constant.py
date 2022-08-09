@@ -9,6 +9,11 @@ projectFolder = "D:\\LinhDNA\\Projects\\Git\\AutoSusun"
 PKG = "com.zingplay.susun"    # Package name
 APK = os.path.join(projectFolder, "Susun.apk")    # Apk name
 
+### Start Team 2
+GOLD_CHEAT_VALUE = 10000
+GEM_CHEAT_VALUE = 10000
+### End Team 2
+
 startByOpening = False  # Start test từ step mở app
 numViewedItems = 6 # Số item ném show cùng lúc
 timeDelta = 60 # seconds, use in cheating time
