@@ -1,3 +1,6 @@
-Report/
+Report/Snapshot/*
+Report/*.png
 .idea
 .vscode
+**/__pycache__
+Main.air/log/

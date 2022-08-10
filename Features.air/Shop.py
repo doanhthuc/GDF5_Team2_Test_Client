@@ -9,6 +9,7 @@ using("Main.air")
 from ExcelUtility import *
 using("ConfigReader")
 from ConfigReader import ConfigReader
+from Common import closePopup, cheatGold, writeResultWithDescription, str2Bool
 
 auto_setup(__file__)
 fName = "Shop"
@@ -23,23 +24,41 @@ def runShop(deviceId):
     except Exception as e:
         WriteLogCrash(e, fName)
 
-def buyItem():
-    try:
-        pass
-    except:
-        pass
-        
-def cheatGold():
-    poco(BTN_CHEAT_1).click([0.5, 0.5])
-    sleep(0.5)
+def buyCard():
+    closePopup()
 
-    poco(FIELD_GOLD_CHEAT).click([0.5, 0.5])
-    text("10000")
+    # click home tab
+    poco(BTN_SHOP_TAB).click([0.5, 0.5])
+    sleep(0.2)
 
-    poco(FIELD_GEM_CHEAT).click([0.1, 0.5])
-    text("10000")
 
-    sleep(0.5)
-
-    poco(BTN_SUBMIT_CHEAT).click([0.5, 0.5])
     
+
+def buyGoldByGem(caseId, gold, gem, description, expectedResult):
+    INIT_GOLD = int(gold)
+    INIT_GEM = int(gem)
+
+    expectedResult = str2Bool(expectedResult)
+    
+    closePopup()
+
+    cheatGold(INIT_GOLD, INIT_GEM)
+
+    poco(BTN_SHOP_TAB).click([0.5, 0.5])
+    poco("shopItemBtn").click([0.5, 0.5])
+
+    goldBuy = int(poco("goldSlotValueTxt").get_text().replace(".", ""))
+    gemPrice = int(poco("buy_btn_gold").offspring("priceTxt").get_text().replace(".", ""))
+    poco("buy_btn_gold").offspring("unitIconImg").click([0.5, 0.5])
+    sleep(1)
+
+    currentGem = int(poco("gemTxt").get_text().replace(".", ""))
+    currentGold = int(poco("goldTxt").get_text().replace(".", ""))
+
+    if (currentGem == (INIT_GEM - gemPrice) and (currentGold == (INIT_GOLD + goldBuy))):
+        writeResultWithDescription(caseId, description, True, expectedResult)
+    else:
+        writeResultWithDescription(caseId, description, False, expectedResult)
+
+    
+        

@@ -1,5 +1,5 @@
 # -*- encoding=utf8 -*-
-__author__ = "LinhDNA"
+__author__ = "VyHV"
 
 from airtest.core.api import *
 from airtest.core.api import using
@@ -10,6 +10,7 @@ using("Main.air")
 from ExcelUtility import *
 using("ConfigReader")
 from ConfigReader import ConfigReader
+from Common import writeResultWithDescription, str2Bool
 
 auto_setup(__file__)
 fName = "Login"
@@ -31,7 +32,7 @@ def runLogin(deviceId):
 # Start game với accName được truyền vào (trên 6 kí tự). 
 # Nếu accName chưa có trong list thì sẽ check Register account đó
 def StartGame(caseId, accName, expectedResult, description):
-    expectedResult = True if expectedResult.lower() == "true" else False
+    expectedResult = str2Bool(expectedResult)
 
     LoginAction(accName)
 
@@ -45,7 +46,7 @@ def StartGame(caseId, accName, expectedResult, description):
     writeResultWithDescription(caseId, description, testResult, expectedResult)
 
 def LoginAndLogout(caseId, accName, expectedResult, description):
-    expectedResult = True if expectedResult.lower() == "true" else False
+    expectedResult = str2Bool(expectedResult)
 
     LoginAction(accName)
     LogoutAction()
@@ -71,9 +72,3 @@ def LoginAction (accName):
 
 def LogoutAction ():
     poco("LogoutButton").click([0.5, 0.5])
-
-def writeResultWithDescription(caseId, description, testResult, expectedResult):
-    if testResult == expectedResult:
-        WriteLogRunning(caseId, description, "", False, True)
-    else:
-        WriteLogRunning(caseId, description, "", False, False)

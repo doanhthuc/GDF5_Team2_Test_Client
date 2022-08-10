@@ -17,7 +17,7 @@ FIELD_CARD_ID_CHEAT = "cardIdCheatInput"
 FIELD_CARD_LEVEL_CHEAT = "cardLevelCheatInput"
 FIELD_CARD_QUANTITY_CHEAT = "cardQuantityCheatInput"
 BTN_SUBMIT_CHEAT = "submitBtn"
-BTN_CLOSE_CHEAT = "closeBtn"
+BTN_CLOSE_1 = "closeBtn"
 
 
 # =========================== Login ===========================
@@ -26,6 +26,9 @@ BTN_LOGIN = "Button_1"
 BTN_PLAY_BATTLE = "battleBtnBackgroundImg"
 
 # =========================== Shop ===========================
+BTN_SHOP_TAB = "SHOP_TAB"
+BTN_HOME_TAB = "HOME_TAB"
+BTN_INVENTORY_TAB = "INVENTORY_TAB"
 ### End Team 2
 
 # =========================== General =========================== 
