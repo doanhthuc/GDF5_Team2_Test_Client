@@ -3,4 +3,4 @@ Report/*.png
 .idea
 .vscode
 **/__pycache__
-Main.air/log/
+Main.air/log/**

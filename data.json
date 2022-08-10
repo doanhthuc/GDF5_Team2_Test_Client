@@ -3,7 +3,7 @@
     "script": "Main.air",
     "tests": {
         "emulator-5554": {
-            "status": 0,
+            "status": 4294967295,
             "path": "Main.air\\log\\emulator-5554\\log.html"
         }
     }
