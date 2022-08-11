@@ -49,12 +49,15 @@ def buyCard(caseId, goldCheat, description):
         WriteLogRunning(1, "Cac vat pham da duoc mua, khong the tien hanh test", "", False, False)
         return
     
+    # cheat quantity of card
     cheatQuantityCard(cardType, 0)
 
+    # buy card
     poco(BTN_SHOP_TAB).click([0.5, 0.5])
     buy_btn = slot.offspring("buy_btn")    
     buy_btn.click()
 
+    # shop popup and then get quantity, price ==> click buy
     buyCardPopup = poco("buyCardPopup")
     if not buyCardPopup.exists():
         WriteLogRunning(caseId, "buyCardPopup element khong ton tai", "", False, False)
@@ -66,21 +69,22 @@ def buyCard(caseId, goldCheat, description):
     
     buyCardPopup.offspring("buy_btn").click()
     
+    # validate
     currentGold = getCurrentGold()
 
     if goldCheat >= goldPrice and currentGold != (goldCheat - goldPrice):
         WriteLogRunning(caseId, "Cap nhat vang sau khi mua card sai", "", False, False)
-        return;
+        return
     if goldCheat < goldPrice and currentGold == goldCheat:
         WriteLogRunning(caseId, "Khong du vang de mua card", "", False, True)
-        return;
+        return
     
     poco(BTN_INVENTORY_TAB).click()
     cardItemInInventory = poco("card_type_" + str(cardType))
     
     if not cardItemInInventory.exists():
         WriteLogRunning(caseId, "cardItemInInventory element khong ton tai", "", False, False)
-        return;
+        return
     
     accumulateTxt = cardItemInInventory.offspring("accumulateTxt").get_text()
     # convert "60/5" ==> "60"
