@@ -25,7 +25,30 @@ def cheatGold(gold, gem):
 
     # click btn submit
     poco(BTN_SUBMIT_CHEAT).click([0.5, 0.5])
-    
+
+def cheatQuantityCard(cardType, quantity):
+    # click home tab
+    poco(BTN_HOME_TAB).click([0.5, 0.5])
+    sleep(0.2)
+
+    # click btn cheat
+    poco(BTN_CHEAT_1).click([0.5, 0.5])
+    sleep(0.2)
+
+    # cheat card type
+    poco("cardIdCheatInput").click([0.5, 0.5])
+    text(str(cardType))
+
+    # cheat card quantity
+    poco("cardQuantityCheatInput").click([0.1, 0.5])
+    for i in range(6):
+        keyevent("KEYCODE_DEL")
+    text(str(quantity))
+    sleep(0.2)
+
+    # click btn submit
+    poco(BTN_SUBMIT_CHEAT).click([0.5, 0.5])
+
 def closePopup():
     closeBtn = poco("BTN_CLOSE_1")
     if closeBtn.exists():

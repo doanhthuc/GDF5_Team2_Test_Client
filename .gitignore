@@ -1,5 +1,6 @@
 Report/Snapshot/*
 Report/*.png
+Report/*.xlsx
 .idea
 .vscode
 **/__pycache__

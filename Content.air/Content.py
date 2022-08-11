@@ -29,6 +29,7 @@ BTN_PLAY_BATTLE = "battleBtnBackgroundImg"
 BTN_SHOP_TAB = "SHOP_TAB"
 BTN_HOME_TAB = "HOME_TAB"
 BTN_INVENTORY_TAB = "INVENTORY_TAB"
+
 ### End Team 2
 
 # =========================== General =========================== 
