@@ -72,14 +72,29 @@ def upgradeCard():
     poco(BTN_INVENTORY_TAB).click()
     sleep(0.5)
 
-    cardNode = getInventoryCardNode(listCardTypeInDeck[0])
+    cardTypeId = listCardTypeInDeck[0]
+    cardNode = getInventoryCardNode(cardTypeId)
     cardNode.click()
     sleep(0.5)
 
-    poco("upgradeBtnNode").click([0.5, 0.5])
-    sleep(2)
+    config = readConfigJson(cardTypeId)
+    for level in range(1, 10):
+        dataLevel = config[level]
+        print("Level  " + level)
+        print(dataLevel)
+        poco("card_holder_bulletType")
+        poco("upgradeBtnNode").click([0.5, 0.5])
+        sleep(2)
     
     poco("acceptBtn").click([0.5, 0.5])
+
+def readConfigJson(cardTypeId):
+    import json
+  
+    f = open("./Config/Tower.json")
+
+    data = json.load(f)
+    return data["tower"][cardTypeId]["stat"]
     
     
 def substract2Array(arrA, arrB):
@@ -102,3 +117,6 @@ def getListCardTypeInDeck():
     
 def getInventoryCardNode(cardType):
     return poco("card_type_" + str(cardType))
+
+
+poco("card_holder_bulletType")
