@@ -9,7 +9,7 @@ using("Main.air")
 from ExcelUtility import *
 using("ConfigReader")
 from ConfigReader import ConfigReader
-from Common import closePopup, cheatGold, writeResultWithDescription, str2Bool, cheatQuantityCard
+from Common import closePopup, cheatFunc, writeResultWithDescription, str2Bool, cheatQuantityCard
 import re
 
 auto_setup(__file__)
@@ -31,7 +31,7 @@ def buyCard(caseId, goldCheat, description):
     INIT_GEM = 10000
     closePopup()
     
-    cheatGold(goldCheat, INIT_GEM)
+    cheatFunc(goldCheat, INIT_GEM)
     
     # click home tab
     poco(BTN_SHOP_TAB).click([0.5, 0.5])
@@ -93,7 +93,7 @@ def buyCard(caseId, goldCheat, description):
     if accumulateTxt == quantity:
         WriteLogRunning(caseId, description, "", False, True)
     else:
-        WriteLogRunning(caseId, "Update so luong card sau khi mua khong dung", "", False, True)
+        WriteLogRunning(caseId, "Update so luong card sau khi mua khong dung", "", False, False)
 
     
 
@@ -105,7 +105,7 @@ def buyGoldByGem(caseId, gold, gem, description, expectedResult):
     
     closePopup()
 
-    cheatGold(INIT_GOLD, INIT_GEM)
+    cheatFunc(INIT_GOLD, INIT_GEM)
 
     poco(BTN_SHOP_TAB).click([0.5, 0.5])
     poco("shopItemBtn").click([0.5, 0.5])
