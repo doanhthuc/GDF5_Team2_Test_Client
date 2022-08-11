@@ -1,5 +1,6 @@
 from network.socket.in_packet import InPacket
 
+
 class CmdReceivePlayerInfo(InPacket):
     def __init__(self):
         super().__init__()
@@ -20,3 +21,18 @@ class CmdReceivePlayerInfo(InPacket):
         print("gem = {}".format(self.gem))
         print("trophy = {}".format(self.trophy))
         print("timeServer = {}".format(self.timeServer))
+
+
+class CmdReceiveOpenChest(InPacket):
+    def __init__(self):
+        super().__init__()
+
+    def read_data(self):
+        print("error = {}".format(self.get_error()))
+    
+        self.chestId = self.get_int()
+        self.state = self.get_int()
+        self.claimTime = self.get_long()
+        print("chestId = {}".format(self.chestId))
+        print("state = {}".format(self.state))
+        print("claimTime = {}".format(self.claimTime))

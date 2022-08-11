@@ -45,6 +45,12 @@ class Game:
         return self.__player_module.get_player_name()
 
     def get_uId(self):
-        return self.__player_module.get_uId();
+        return self.__player_module.get_uId()
+
+    def open_chest(self, chestId):
+        self.__player_module.send_open_chest(chestId)
+
+    def get_open_chest_code(self):
+        return self.__player_module.get_open_chest_code()
 
 

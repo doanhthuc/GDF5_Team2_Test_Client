@@ -1,11 +1,12 @@
 from network.socket.packet_header_analyze import *
 
+
 class OutPacket:
 
     def __init__(self):
         self.__capacity = None
         self.__data = None
-        self.__controller_id = 1 # default controller id
+        self.__controller_id = 1  # default controller id
         self.__cmd_id = None
         self.__is_packed_header = False
         self.__length = None
@@ -69,9 +70,18 @@ class OutPacket:
         b = bytearray(i_str.encode())
         self.put_byte_array(b, len(b))
 
+    def put_int(self, v):
+        self.put_byte((v >> 24) & 0xff)
+        self.put_byte((v >> 16) & 0xff)
+        self.put_byte((v >> 8) & 0xff)
+        self.put_byte((v >> 0) & 0xff)
 
-
-
-
-
-
+    def put_long(self, v):
+        self.put_byte((v >> 56) & 0xff)
+        self.put_byte((v >> 48) & 0xff)
+        self.put_byte((v >> 40) & 0xff)
+        self.put_byte((v >> 32) & 0xff)
+        self.put_byte((v >> 24) & 0xff)
+        self.put_byte((v >> 16) & 0xff)
+        self.put_byte((v >> 8) & 0xff)
+        self.put_byte((v >> 0) & 0xff)
