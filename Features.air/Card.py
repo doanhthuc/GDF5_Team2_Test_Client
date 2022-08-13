@@ -9,7 +9,8 @@ using("Main.air")
 from ExcelUtility import *
 using("ConfigReader")
 from ConfigReader import ConfigReader
-from Common import closePopup, cheatFunc, writeResultWithDescription, str2Bool, cheatQuantityCard
+from Common import closePopup, cheatFunc, TowerConfigUtil, GameConfig
+from Login import LoginAction
 import re
 
 auto_setup(__file__)
@@ -25,6 +26,7 @@ def runCard(deviceId):
     except Exception as e:
         WriteLogCrash(e, fName)
     
+
 cardTypeIDs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 def swap2Card(caseId):
@@ -57,45 +59,79 @@ def swap2Card(caseId):
     else:
         WriteLogRunning(caseId, "Swap 2 card", "", False, False)
 
+def upgradeAllCard(des):
+    if poco("Button_1").exists():
+        LoginAction("vyhv")
+    for cardTypeUpgrade in GameConfig["TOWER"].values():
+        upgradeCard(cardTypeUpgrade)
 
-def upgradeCard():
+def upgradeCard(cardTypeUpgrade):
+    INIT_FRAGMENT = 10000
     closePopup()
-    
-    poco(BTN_INVENTORY_TAB).click()
-    sleep(0.5)
-
-    listCardTypeInDeck = getListCardTypeInDeck()
-    cardTypeUpgrade = listCardTypeInDeck[0]
-    
-    cheatFunc(10000000, 10000000, 10, cardTypeUpgrade, 1, 10000)
 
     poco(BTN_INVENTORY_TAB).click()
     sleep(0.5)
 
-    cardTypeId = listCardTypeInDeck[0]
-    cardNode = getInventoryCardNode(cardTypeId)
+    cheatFunc(10000000, 10000000, 10, cardTypeUpgrade, 1, INIT_FRAGMENT)
+
+    poco(BTN_INVENTORY_TAB).click()
+    sleep(0.5)
+
+    cardNode = getInventoryCardNode(cardTypeUpgrade)
     cardNode.click()
     sleep(0.5)
 
-    config = readConfigJson(cardTypeId)
+    isPass = True
     for level in range(1, 10):
-        dataLevel = config[level]
-        print("Level  " + level)
+        dataLevel = TowerConfigUtil.readConfigJson(cardTypeUpgrade, level)
+        keyNames = dataLevel.keys()
+        for key in keyNames:
+            test_txt = poco("card_holder_" + key).offspring("statValueTxt").get_text()
+            expected_txt = dataLevel[key]
+
+            log = "test - " + key + " : expectedResult(" + expected_txt + "), test_txt(" + test_txt + ")"
+            print(log)
+            if expected_txt != test_txt:
+                isPass = False
+                msg = "Upgrade tower type = {}, ".format(cardTypeUpgrade) + log
+                WriteLogRunning(0, msg, "", False, False)
+        print("Level  " + str(level))
         print(dataLevel)
-        poco("card_holder_bulletType")
-        poco("upgradeBtnNode").click([0.5, 0.5])
+        
+        upgradeBtn = poco("upgradeBtnNode")
+        goldUpgrade = int(upgradeBtn.offspring("goldValueTxt").get_text())
+        print("gold upgrade: " + str(goldUpgrade))
+
+        accumulateTxt = cardNode.offspring("accumulateTxt").get_text()
+        nextUpgrageFragement = int(re.sub(r"\d*\/", "", accumulateTxt))
+        remainFragment = int(re.sub(r"\/\d*", "", accumulateTxt))
+
+        if (INIT_FRAGMENT != remainFragment):
+            isPass = False
+            msg = "Fragment wrong (logic = {}, ui = {})".format(INIT_FRAGMENT, remainFragment)
+            WriteLogRunning(0, msg, "", False, False)
+        INIT_FRAGMENT = INIT_FRAGMENT - nextUpgrageFragement
+        
+        print("nextUpgrageFragement" + str(nextUpgrageFragement))
+        print("remainFragment" + str(remainFragment))
+    
+        levelTxt = cardNode.offspring("levelTxt").get_text()
+        print("level = " + levelTxt)
+        if levelTxt != ("Level." + str(level)):
+            isPass = False
+            msg = "Level display wrong (logic = {}, ui = {})".format(level, levelTxt)
+            WriteLogRunning(0, msg, "", False, False)
+
+        upgradeBtn.click([0.5, 0.5])
         sleep(2)
-    
-    poco("acceptBtn").click([0.5, 0.5])
+        poco("acceptBtn").click([0.5, 0.5])
+        sleep(1)
 
-def readConfigJson(cardTypeId):
-    import json
-  
-    f = open("./Config/Tower.json")
-
-    data = json.load(f)
-    return data["tower"][cardTypeId]["stat"]
+        if isPass:
+            WriteLogRunning(0, "Upgrade card type = {}, level = {}".format(cardTypeUpgrade, level), "", False, True)
+        isPass = True
     
+    sleep(1)
     
 def substract2Array(arrA, arrB):
     return list(set(arrA).difference(set(arrB)))
@@ -119,4 +155,8 @@ def getInventoryCardNode(cardType):
     return poco("card_type_" + str(cardType))
 
 
-poco("card_holder_bulletType")
+
+
+
+
+
