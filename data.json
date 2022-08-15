@@ -1,10 +1,11 @@
 {
-    "start": 1660378339.4515765,
+    "start": 1660560519.0454867,
     "script": "Main.air",
     "tests": {
         "emulator-5554": {
             "status": 0,
-            "path": "Main.air\\log\\emulator-5554\\log.html"
+            "device": "emulator-5554",
+            "path": ""
         }
     }
 }

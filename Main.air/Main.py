@@ -13,6 +13,7 @@ from Features import *
 from Login import *
 from Shop import *
 from Card import *
+from Chest import *
 # from Shop import *
 using("Content.air")
 from Content import *
