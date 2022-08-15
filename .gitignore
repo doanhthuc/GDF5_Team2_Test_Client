@@ -1,5 +1,4 @@
 Report/Snapshot/*
-Report/*.png
 Report/*.xlsx
 .idea
 .vscode
