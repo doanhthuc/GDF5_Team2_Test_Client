@@ -3,6 +3,7 @@ from ConfigReader import ConfigReader
 from ExcelUtility import *
 from Features import *
 from Content import *
+from Shop import getCurrentGold
 import re
 __author__ = "ThucPD"
 
@@ -27,8 +28,12 @@ def runChest(deviceId):
         WriteLogCrash(e, fName)
 
 
-def claimChest(caseId, chestId, description, expectedResult):
+def claimChest(caseId, chestId, init_gold, init_gem, init_card_quantity, description, expectedResult):
     expectedResult = str2Bool(expectedResult)
+
+    initItemsValueToGetItemsFromTreasure(
+        init_gold, init_gem, init_card_quantity)
+
     poco(BTN_HOME_TAB).click([0.5, 0.5])
     poco("treasureSlotNode" + str(chestId)).click([0.5, 0.5])
 
@@ -38,39 +43,7 @@ def claimChest(caseId, chestId, description, expectedResult):
 
     sleep(5)
 
-    # find the card to buy
-    gold_in_treasure = None
-    gold_quantity = None
-    card_type_1 = None
-    card_type_2 = None
-    card_in_treasure_node_1 = None
-    card_in_treasure_node_2 = None
-    gold_in_treasure = poco("item_receive_11").offspring("cardQuantityTxt")
-    gold_quantity = int(gold_in_treasure.get_text().replace("x", ""))
-    print(f"gold_in_treasure: {gold_quantity}")
-    for i in range(0, 10):
-        slot = poco("item_receive_" + str(i))
-        if slot.exists():
-            card_type_2 = card_type_1
-            card_in_treasure_node_2 = card_in_treasure_node_1
-            card_type_1 = i
-            card_in_treasure_node_1 = slot
-
-    if card_in_treasure_node_1 is None or card_in_treasure_node_2 is None:
-        WriteLogRunning(
-            1, "Cac vat pham da duoc mua, khong the tien hanh test", "", False, False)
-        return
-
-    card_1_quantity = card_in_treasure_node_1.offspring(
-        "cardQuantityTxt").get_text().replace("x", "")
-    card_2_quantity = card_in_treasure_node_2.offspring(
-        "cardQuantityTxt").get_text().replace("x", "")
-
-    card_1_quantity = int(card_1_quantity)
-    card_2_quantity = int(card_2_quantity)
-
-    print(f"card_1_quantity: {card_1_quantity}")
-    print(f"card_2_quantity: {card_2_quantity}")
+    gold_quantity, card_type_1, card_1_quantity, card_type_2, card_2_quantity = receiveItemInTreasure()
 
     sleep(2)
 
@@ -93,36 +66,108 @@ def claimChest(caseId, chestId, description, expectedResult):
     accumulateTxt2 = cardItemInInventory2.offspring("accumulateTxt").get_text()
     accumulateTxt2 = int(re.sub(r"\/\d*", "", accumulateTxt2))
 
-    print(f"accumulateTxt1: {accumulateTxt1} cardID 1 : {card_type_1}")
-    print(f"accumulateTxt1: {accumulateTxt2} cardID 1 : {card_type_2}")
+    currentGold = getCurrentGold()
 
-    if card_1_quantity == accumulateTxt1 and card_2_quantity == accumulateTxt2:
+    if init_gold + gold_quantity != currentGold:
+        WriteLogRunning(
+            caseId, "Cap nhat vang sau khi mo ruong sai", "", False, False)
+        return
+
+    if card_1_quantity + init_card_quantity == accumulateTxt1 and card_2_quantity + init_card_quantity == accumulateTxt2:
         WriteLogRunning(caseId, description, "", False, True)
     else:
-        WriteLogRunning(
-            caseId, "Update so luong card sau khi mua khong dung", "", False, False)
+        # WriteLogRunning(
+        #     caseId, "Update so luong card sau khi mo ruong khong dung", "", False, False)
+        print(description)
 
 
-def openChestWhenHaveAChestIsOpening(caseId, chestId, description, expectedResult):
+def speedUpChest(caseId, chestId, init_gold, init_gem, init_card_quantity, description, expectedResult):
 
-    goldCheat = 10000
-
-    INIT_GEM = 10000
     closePopup()
 
-    cheatFunc(goldCheat, INIT_GEM)
+    expectedResult = str2Bool(expectedResult)
+    initItemsValueToGetItemsFromTreasure(
+        init_gold, init_gem, init_card_quantity)
 
+    poco(BTN_HOME_TAB).click([0.5, 0.5])
+    poco("treasureSlotNode" + str(chestId)).click([0.5, 0.5])
+
+    sleep(0.5)
+    poco("speedUpBtn").click([0.5, 0.5])
+    sleep(5)
+
+    gold_quantity, card_type_1, card_1_quantity, card_type_2, card_2_quantity = receiveItemInTreasure()
+
+    sleep(2)
+
+    poco("receiveBtn").click([0.5, 0.5])
+
+    sleep(2)
+
+    poco(BTN_INVENTORY_TAB).click()
+    sleep(0.5)
+    cardItemInInventory1 = poco("card_type_" + str(card_type_1))
+    accumulateTxt1 = cardItemInInventory1.offspring("accumulateTxt").get_text()
+    accumulateTxt1 = int(re.sub(r"\/\d*", "", accumulateTxt1))
+
+    if not cardItemInInventory1.exists():
+        WriteLogRunning(
+            caseId, "cardItemInInventory element khong ton tai", "", False, False)
+        return
+
+    currentGold = getCurrentGold()
+
+    if init_gold + gold_quantity != currentGold:
+        WriteLogRunning(
+            caseId, "Cap nhat vang sau khi mo ruong sai", "", False, False)
+
+    cardItemInInventory2 = poco("card_type_" + str(card_type_2))
+    accumulateTxt2 = cardItemInInventory2.offspring("accumulateTxt").get_text()
+    accumulateTxt2 = int(re.sub(r"\/\d*", "", accumulateTxt2))
+
+    if card_1_quantity == accumulateTxt1 and card_2_quantity == accumulateTxt2:
+        WriteLogRunning(caseId, description, "", False, True)
+    else:
+        # WriteLogRunning(
+            # caseId, "Update so luong card sau khi mo ruong khong dung", "", False, False)
+        print(description)
+
+
+def openChestWhenHaveAChestIsOpening(caseId, chestId, init_gold, init_gem, init_card_quantity, description, expectedResult):
+    speedUpChest(caseId, chestId, init_gold, init_gem,
+                 init_card_quantity, description, expectedResult)
+
+
+def openChestWhenNotAnyChestIsOpening(caseId, chestId, description, expectedResult):
     expectedResult = str2Bool(expectedResult)
     poco(BTN_HOME_TAB).click([0.5, 0.5])
     poco("treasureSlotNode" + str(chestId)).click([0.5, 0.5])
 
     sleep(0.5)
 
-    poco("speedUpBtn").click([0.5, 0.5])
+    poco("receiveBtn").click([0.5, 0.5])
 
-    sleep(2)
+    print(description)
 
-    # find the card to buy
+
+def cheatAllCardQuantityInInventory(card_quantity):
+    for i in range(0, 10):
+        cheatQuantityCard(i, card_quantity)
+
+
+def initCardsQuantityInventory(init_card_quantity):
+    poco(BTN_INVENTORY_TAB).click([0.5, 0.5])
+    sleep(0.5)
+    cheatAllCardQuantityInInventory(init_card_quantity)
+    sleep(0.5)
+
+
+def initItemsValueToGetItemsFromTreasure(init_gold, init_gem, init_card_quantity):
+    initCardsQuantityInventory(init_card_quantity)
+    cheatFunc(init_gold, init_gem, None, None, None, None)
+
+
+def receiveItemInTreasure():
     gold_in_treasure = None
     gold_quantity = None
     card_type_1 = None
@@ -153,42 +198,4 @@ def openChestWhenHaveAChestIsOpening(caseId, chestId, description, expectedResul
     card_1_quantity = int(card_1_quantity)
     card_2_quantity = int(card_2_quantity)
 
-    sleep(2)
-
-    poco("receiveBtn").click([0.5, 0.5])
-
-    sleep(2)
-
-    poco(BTN_INVENTORY_TAB).click()
-    sleep(0.5)
-    cardItemInInventory1 = poco("card_type_" + str(card_type_1))
-    accumulateTxt1 = cardItemInInventory1.offspring("accumulateTxt").get_text()
-    accumulateTxt1 = int(re.sub(r"\/\d*", "", accumulateTxt1))
-
-    if not cardItemInInventory1.exists():
-        WriteLogRunning(
-            caseId, "cardItemInInventory element khong ton tai", "", False, False)
-        return
-
-    cardItemInInventory2 = poco("card_type_" + str(card_type_2))
-    accumulateTxt2 = cardItemInInventory2.offspring("accumulateTxt").get_text()
-    accumulateTxt2 = int(re.sub(r"\/\d*", "", accumulateTxt2))
-
-    print(f"accumulateTxt1: {accumulateTxt1} cardID 1 : {card_type_1}")
-    print(f"accumulateTxt1: {accumulateTxt2} cardID 1 : {card_type_2}")
-
-    if card_1_quantity == accumulateTxt1 and card_2_quantity == accumulateTxt2:
-        WriteLogRunning(caseId, description, "", False, True)
-    else:
-        WriteLogRunning(
-            caseId, "Update so luong card sau khi mua khong dung", "", False, False)
-
-
-def openChestWhenHaveAChestIsNotOpening(caseId, chestId, description, expectedResult):
-    expectedResult = str2Bool(expectedResult)
-    poco(BTN_HOME_TAB).click([0.5, 0.5])
-    poco("treasureSlotNode" + str(chestId)).click([0.5, 0.5])
-
-    sleep(0.5)
-
-    poco("receiveBtn").click([0.5, 0.5])
+    return gold_quantity, card_type_1, card_1_quantity, card_type_2, card_2_quantity
